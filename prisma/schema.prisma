@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+model User {
+  id    String  @id @default(uuid())
+  email String  @unique
+  name  String?
+  age Int
+  password String
+  urlGithub String
+
+  dtTimeCreate   DateTime @default(now()) @map("dt_time_creation")
+  dtTimeUpdate   DateTime @default(now()) @map("dt_time_update")
+
+  @@map("user")
+}
+
+model Product {
+  id String @id @default(uuid())
+  description String
+  price Int
+  stock Int
+  category String
+  date  DateTime
+  available Boolean
+  storeCnpj Int
+  supplier Supplier @relation(fields:[supplierId], references:[id])
+  supplierId  String
+  store Store @relation(fields:[storeId], references:[cnpj])
+  storeId String
+
+
+  dtTimeCreate   DateTime @default(now()) @map("dt_time_creation")
+  dtTimeUpdate   DateTime @default(now()) @map("dt_time_update")
+
+  @@map("product")
+}
+
+model Store {
+  cnpj String @id 
+  name String
+  segment String? 
+  address String
+  telephone String?
+  numberofbranches Int
+  opening  DateTime
+
+  store Product[]
+
+  dtTimeCreate   DateTime @default(now()) @map("dt_time_creation")
+  dtTimeUpdate   DateTime @default(now()) @map("dt_time_update")
+  @@map("store")
+}
+
+model Supplier {
+  id String @id @default(uuid())
+  email String  @unique
+  name  String
+  evaluation Int
+  creation DateTime
+  update DateTime
+
+  supplier Product[]
+
+  dtTimeCreate   DateTime @default(now()) @map("dt_time_creation")
+  dtTimeUpdate   DateTime @default(now()) @map("dt_time_update")
+  @@map("supplier")
+}
